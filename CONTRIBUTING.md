@@ -1,55 +1,55 @@
-# contributing to cobalt
-if you're reading this, you are probably interested in contributing to cobalt, which we are very thankful for :3
+# 为 cobalt 做贡献
+如果你正在阅读这篇文章，你可能有兴趣为 cobalt 做贡献，我们对此非常感谢 :3
 
-this document serves as a guide to help you make contributions that we can merge into the cobalt codebase.
+本文档旨在帮助你做出可以合并到 cobalt 代码库中的贡献。
 
-## translations
-we are currently accepting translations via the [i18n platform](https://i18n.imput.net).
+## 翻译
+我们目前通过 [i18n 平台](https://i18n.imput.net) 接受翻译。
 
-thank you for showing interest in making cobalt more accessible around the world, we really appreciate it! here are some guidelines for how a cobalt translation should look:
+感谢你对让 cobalt 在全球更易用所表现出的兴趣，我们非常感谢！以下是 cobalt 翻译应遵循的一些指南：
 
-- cobalt's writing style is informal. please do not use formal language, unless there is no other way to express the same idea of the original text in your language.
-- all cobalt text is written in lowercase. this is a stylistic choice, please do not capitalize translated sentences.
-- do not translate the name "cobalt", or "imput"
-- you can translate "meowbalt" into whatever your language's equivalent of _meow_ is (e.g. _miaubalt_ in German)
-- **please don't translate cobalt into languages which you are not experienced in.** we can use google translate ourselves, but we would prefer cobalt to be translated by humans, not computers.
+- cobalt 的写作风格是非正式的。请不要使用正式语言，除非你的语言中没有其他方式来表达原文的相同含义。
+- 所有 cobalt 文本都使用小写。这是一种风格选择，请不要将翻译的句子大写。
+- 不要翻译 "cobalt" 或 "imput" 这些名称
+- 你可以将 "meowbalt" 翻译成你语言中对应的 _meow_（例如德语中的 _miaubalt_）
+- **请不要将 cobalt 翻译成你不精通的语言。**我们可以自己使用谷歌翻译，但我们更希望 cobalt 由人类而非计算机来翻译。
 
-if your language does not exist on the translation platform yet, you can request to add it by adding it to any of cobalt's components (e.g. [here](https://i18n.imput.net/projects/cobalt/about/)).
+如果你的语言尚未出现在翻译平台上，你可以通过将其添加到 cobalt 的任何组件中来请求添加（例如[这里](https://i18n.imput.net/projects/cobalt/about/)）。
 
-before translating a piece of text, check that no one has made a translation yet. pending translations are displayed in the **Suggestions** tab on the translate page. if someone already made a suggestion, and you think it's correct, you can upvote it! this helps us distinguish that a translation is correct.
+在翻译一段文本之前，请检查是否已有人进行了翻译。待处理的翻译显示在翻译页面的**建议**标签页中。如果有人已经提出了建议，而你认为它是正确的，你可以给它投票！这有助于我们区分翻译是否正确。
 
-if no one has submitted a translation, or the submitted translation seems wrong to you, you can submit your translation by clicking the **Suggest** button for each individual string, which sends it off for human review. we will then check it to to ensure no malicious translations are submitted, and add it to cobalt.
+如果没有人提交翻译，或者你认为提交的翻译有误，你可以通过点击每个字符串的**建议**按钮来提交你的翻译，这将发送它进行人工审核。然后我们会检查它以确保没有恶意翻译被提交，并将其添加到 cobalt 中。
 
-if any translation string's meaning seems unclear to you, please leave a comment on the *Comments* tab, and we will either add an explanation or a screenshot.
+如果任何翻译字符串的含义对你来说不清楚，请在*评论*标签页上留下评论，我们会添加解释或截图。
 
-## adding features or support for services
-before putting in the effort to implement a feature, it's worth considering whether it would be appropriate to add it to cobalt. the cobalt api is built to assist people **only with downloading freely accessible content**. other functionality, such as:
-- downloading paid / not publicly accessible content
-- downloading content protected by DRM
-- scraping unrelated information & exposing it outside of file metadata
+## 添加功能或服务支持
+在投入精力实现功能之前，值得考虑将其添加到 cobalt 是否合适。cobalt api 的构建目的是**仅帮助人们下载可自由访问的内容**。其他功能，例如：
+- 下载付费/非公开可访问的内容
+- 下载受 DRM 保护的内容
+- 抓取不相关信息并将其暴露在文件元数据之外
 
-will not be reviewed or merged.
+将不会被审核或合并。
 
-if you plan on adding a feature or support for a service, but are unsure whether it would be appropriate, it's best to open an issue and discuss it beforehand.
+如果你计划添加功能或服务支持，但不确定是否合适，最好先开一个 issue 进行讨论。
 
-## git
-when contributing code to cobalt, there are a few guidelines in place to ensure that the code history is readable and comprehensible.
+## Git
+在为 cobalt 贡献代码时，有一些准则以确保代码历史可读且易于理解。
 
-### clean commit messages
-internally, we use a format similar to [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) - the first part signifies which part of the code you are changing (the *scope*), and the second part explains the change. for inspiration on how to write appropriate commit titles, you can take a look at the [commit history](https://github.com/imputnet/cobalt/commits/).
+### 清晰的提交信息
+在内部，我们使用类似于 [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) 的格式——第一部分表示你正在更改的代码部分（*范围*），第二部分解释更改内容。有关如何编写适当提交标题的灵感，你可以查看[提交历史](https://github.com/imputnet/cobalt/commits/)。
 
-the scope is not strictly defined, you can write whatever you find most fitting for the particular change. suppose you are changing a small part of a more significant part of the codebase. in that case, you can specify both the larger and smaller scopes in the commit message for clarity (e.g., if you were changing something in internal streams, the commit could be something like `api/stream: fix object not being handled properly`).
+范围没有严格定义，你可以写你认为最适合特定更改的内容。假设你正在更改代码库中较大部分的一个小部分。在这种情况下，你可以在提交信息中同时指定较大和较小的范围以提高清晰度（例如，如果你正在更改内部流中的某些内容，提交可以是类似 `api/stream: fix object not being handled properly` 的内容）。
 
-if you think a change deserves further explanation, we encourage you to write a short explanation in the commit message ([example](https://github.com/imputnet/cobalt/commit/31be60484de8eaf63bba8a4f508e16438aa7ba6e)), which will save both you and us time having to enquire about the change, and you explaining the reason behind it.
+如果你认为更改需要进一步解释，我们鼓励你在提交信息中写一个简短的解释（[示例](https://github.com/imputnet/cobalt/commit/31be60484de8eaf63bba8a4f508e16438aa7ba6e)），这将节省你和我们询问更改原因的时间。
 
-if your contribution has uninformative commit titles, you may be asked to interactively rebase your branch and amend each commit to include a meaningful title.
+如果你的贡献有无信息量的提交标题，你可能会被要求交互式变基你的分支并修改每个提交以包含有意义的标题。
 
-### clean commit history
-if your branch is out of date and/or has some merge conflicts with the `current` branch, you should **rebase** it instead of merging. this prevents meaningless merge commits from being included in your branch, which would then end up in the cobalt git history.
+### 清晰的提交历史
+如果你的分支过时和/或与 `current` 分支有一些合并冲突，你应该**变基**而不是合并。这可以防止无意义的合并提交被包含在你的分支中，然后最终出现在 cobalt 的 git 历史中。
 
-if you find a mistake or bug in your code before it's merged or reviewed, instead of making a brand new commit to fix it, it would be preferable to amend that specific commit where the mistake was first introduced. this also helps us easily revert a commit if we discover that it introduced a bug or some unwanted behavior.
-- if the commit you are fixing is the latest one, you can add your files to staging and then use `git commit --amend` to apply the change.
-- if the commit is somewhere deeper in your branch, you can use `git commit --fixup=HASH`, where *`HASH`* is the commit you are fixing.
-    - afterward, you must interactively rebase your branch with `git rebase -i current --autosquash`.
-      this will open up an editor, but you don't need to do anything else except save the file and exit.
-- once you do either of these things, you will need to do a **force push** to your branch with `git push --force-with-lease`.
+如果你在代码合并或审核之前发现错误或 bug，与其创建一个全新的提交来修复它，更可取的是修改引入错误的特定提交。这也帮助我们在发现它引入了 bug 或某些不需要的行为时轻松地回滚提交。
+- 如果你要修复的提交是最新的，你可以将文件添加到暂存区，然后使用 `git commit --amend` 来应用更改。
+- 如果提交在分支中更深处，你可以使用 `git commit --fixup=HASH`，其中 *`HASH`* 是你要修复的提交。
+    - 之后，你必须使用 `git rebase -i current --autosquash` 交互式变基你的分支。
+      这将打开一个编辑器，但你不需要做任何其他事情，只需保存文件并退出。
+- 完成上述任一操作后，你需要使用 `git push --force-with-lease` 对你的分支进行**强制推送**。

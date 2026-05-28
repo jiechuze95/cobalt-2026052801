@@ -1,64 +1,64 @@
-# how to protect your cobalt instance
-if you keep getting a ton of unknown traffic that hurts the performance of your instance, then it might be a good idea to enable bot protection.
+# 如何保护你的 cobalt 实例
+如果你持续收到大量未知流量，影响了实例的性能，那么启用机器人防护可能是个好主意。
 
 > [!NOTE]
-> this tutorial will work reliably on the latest official version of cobalt 10.
-we can't promise full compatibility with anything else.
+> 本教程在最新的 cobalt 10 官方版本上可以可靠运行。
+> 我们无法保证与其他任何版本的完全兼容性。
 
-## configure cloudflare turnstile
-turnstile is a free, safe, and privacy-respecting alternative to captcha.
-cobalt uses it automatically to weed out bots and automated scripts.
-your instance doesn't have to be proxied by cloudflare to use turnstile.
-all you need is a free cloudflare account to get started.
+## 配置 Cloudflare Turnstile
+Turnstile 是一个免费、安全且尊重隐私的验证码替代方案。
+cobalt 使用它自动过滤机器人和自动化脚本。
+你的实例不需要通过 Cloudflare 代理即可使用 Turnstile。
+你只需要一个免费的 Cloudflare 账户即可开始。
 
-cloudflare dashboard interface might change over time, but basics should stay the same.
+Cloudflare 仪表板界面可能会随时间变化，但基本操作应该保持不变。
 
 > [!WARNING]
-> never share the turnstile secret key, always keep it private. if accidentally exposed, rotate it in widget settings.
+> 永远不要分享 Turnstile 密钥，始终保持私密。如果不慎泄露，请在小部件设置中轮换密钥。
 
-1. open [the cloudflare dashboard](https://dash.cloudflare.com/) and log into your account
+1. 打开 [Cloudflare 仪表板](https://dash.cloudflare.com/) 并登录你的账户
 
-2. once logged in, select `Turnstile` in the sidebar
+2. 登录后，在侧边栏中选择 `Turnstile`
 <div align="left">
     <p>
         <img src="images/protect-an-instance/sidebar.png" width="250" />
     </p>
 </div>
 
-3. press `Add widget`
+3. 点击 `Add widget`
 <div align="left">
     <p>
         <img src="images/protect-an-instance/add.png" width="550" />
     </p>
 </div>
 
-4. enter the widget name (can be anything, such as "cobalt")
+4. 输入小部件名称（可以是任何名称，如 "cobalt"）
 <div align="left">
     <p>
         <img src="images/protect-an-instance/name.png" width="450" />
     </p>
 </div>
 
-5. add cobalt frontend domains you want the widget to work with, you can change this list later at any time
-    - if you want to use your processing instance with [cobalt.tools](https://cobalt.tools/) frontend, then add `cobalt.tools` to the list
+5. 添加你希望小部件生效的 cobalt 前端域名，你可以随时更改此列表
+    - 如果你想将处理实例与 [cobalt.tools](https://cobalt.tools/) 前端一起使用，请将 `cobalt.tools` 添加到列表中
 <div align="left">
     <p>
         <img src="images/protect-an-instance/domain.png" width="450" />
     </p>
 </div>
 
-6. select `invisible` widget mode
+6. 选择 `invisible` 小部件模式
 <div align="left">
     <p>
         <img src="images/protect-an-instance/mode.png" width="450" />
     </p>
 </div>
 
-7. press `create`
+7. 点击 `create`
 
-8. keep the page with sitekey and secret key open, you'll need them later.
-if you closed it, no worries!
-just open the same turnstile page and press "settings" on your freshly made turnstile widget.
+8. 保持包含 sitekey 和密钥的页面打开，稍后你会用到它们。
+如果你关闭了它，不用担心！
+只需打开相同的 Turnstile 页面，点击你新创建的 Turnstile 小部件的"settings"即可。
 
 <div align="left">
     <p>
@@ -66,91 +66,91 @@ just open the same turnstile page and press "settings" on your freshly made turn
     </p>
 </div>
 
-you've successfully created a turnstile widget!
-time to add it to your processing instance.
+你已成功创建了 Turnstile 小部件！
+现在是时候将其添加到你的处理实例中了。
 
-### enable turnstile on your processing instance
-this tutorial assumes that you only have `API_URL` in your `environment` variables list.
-if you have other variables there, just add new ones after existing ones.
+### 在处理实例上启用 Turnstile
+本教程假设你的 `environment` 变量列表中只有 `API_URL`。
+如果你有其他变量，只需在现有变量之后添加新的即可。
 
 > [!CAUTION]
-> never use any values from the tutorial, especially `JWT_SECRET`!
+> 永远不要使用教程中的任何值，尤其是 `JWT_SECRET`！
 
-1. open your `docker-compose.yml` config file in any text editor of choice.
-2. copy the turnstile sitekey & secret key and paste them to their respective variables.
-`TURNSTILE_SITEKEY` for the sitekey and `TURNSTILE_SECRET` for the secret key:
+1. 用你选择的文本编辑器打开 `docker-compose.yml` 配置文件。
+2. 复制 Turnstile sitekey 和密钥，将它们粘贴到各自的变量中。
+`TURNSTILE_SITEKEY` 用于 sitekey，`TURNSTILE_SECRET` 用于密钥：
 ```yml
 environment:
     API_URL: "https://your.instance.url.here.local/"
-    TURNSTILE_SITEKEY: "2x00000000000000000000BB" # use your key
-    TURNSTILE_SECRET: "2x0000000000000000000000000000000AA" # use your key
+    TURNSTILE_SITEKEY: "2x00000000000000000000BB" # 使用你的密钥
+    TURNSTILE_SECRET: "2x0000000000000000000000000000000AA" # 使用你的密钥
 ```
-3. generate a `JWT_SECRET`. we recommend using an alphanumeric collection with a length of at least 64 characters.
-this string will be used as salt for all JWT keys.
+3. 生成一个 `JWT_SECRET`。我们建议使用长度至少为 64 个字符的字母数字组合。
+此字符串将用作所有 JWT 密钥的盐值。
 
-    you can generate a random secret with `pnpm -r token:jwt` or use any other that you like.
+    你可以使用 `pnpm -r token:jwt` 生成随机密钥，或使用任何你喜欢的方式。
 
 ```yml
 environment:
     API_URL: "https://your.instance.url.here.local/"
-    TURNSTILE_SITEKEY: "2x00000000000000000000BB" # use your key
-    TURNSTILE_SECRET: "2x0000000000000000000000000000000AA" # use your key
-    JWT_SECRET: "bgBmF4efNCKPirD" # create a new secret, NEVER use this one
+    TURNSTILE_SITEKEY: "2x00000000000000000000BB" # 使用你的密钥
+    TURNSTILE_SECRET: "2x0000000000000000000000000000000AA" # 使用你的密钥
+    JWT_SECRET: "bgBmF4efNCKPirD" # 创建新密钥，不要使用这个
 ```
-4. restart the docker container.
+4. 重启 docker 容器。
 
-## configure api keys
-if you want to use your instance outside of web interface, you'll need an api key!
+## 配置 API 密钥
+如果你想在 Web 界面之外使用你的实例，你需要一个 API 密钥！
 
 > [!NOTE]
-> this tutorial assumes that you'll keep your keys file locally, on the instance server.
-> if you wish to upload your file to a remote location,
-> replace the value for `API_KEYS_URL` with a direct url to the file
-> and skip the second step.
+> 本教程假设你将密钥文件保存在实例服务器的本地。
+> 如果你希望将文件上传到远程位置，
+> 请将 `API_KEYS_URL` 的值替换为文件的直接 URL
+> 并跳过第二步。
 
 > [!WARNING]
-> when storing keys file remotely, make sure that it's not publicly accessible
-> and that link to it is either authenticated (via query) or impossible to guess.
+> 远程存储密钥文件时，请确保它不被公开访问，
+> 并且链接要么经过身份验证（通过查询参数），要么无法猜测。
 >
-> if api keys leak, you'll have to update/remove all UUIDs to revoke them.
+> 如果 API 密钥泄露，你将需要更新/删除所有 UUID 来撤销它们。
 
-1. create a `keys.json` file following [the schema and example down below](#api-key-file-format).
+1. 按照[下方的 schema 和示例](#api-key-file-format)创建一个 `keys.json` 文件。
 
-2. expose the `keys.json` to the docker container:
+2. 将 `keys.json` 暴露给 docker 容器：
 ```yml
 volumes:
-    - ./keys.json:/keys.json:ro # ro - read-only
+    - ./keys.json:/keys.json:ro # ro - 只读
 ```
 
-3. add a path to the keys file to container environment:
+3. 将密钥文件的路径添加到容器环境变量中：
 ```yml
 environment:
-    # ... other variables here ...
+    # ... 其他变量 ...
     API_KEY_URL: "file:///keys.json"
 ```
 
-4. restart the docker container.
+4. 重启 docker 容器。
 
-## limit access to an instance with api keys but no turnstile
-by default, api keys are additional, meaning that they're not *required*,
-but work alongside with turnstile or no auth (regular ip hash rate limiting).
+## 使用 API 密钥但不使用 Turnstile 限制实例访问
+默认情况下，API 密钥是附加的，意味着它们不是*必需的*，
+而是与 Turnstile 或无身份验证（常规 IP 哈希速率限制）配合使用。
 
-to always require auth (via keys or turnstile, if configured), set `API_AUTH_REQUIRED` to 1:
+要始终要求身份验证（通过密钥或 Turnstile，如果已配置），将 `API_AUTH_REQUIRED` 设置为 1：
 ```yml
 environment:
-    # ... other variables here ...
+    # ... 其他变量 ...
     API_AUTH_REQUIRED: 1
 ```
 
-- if both keys and turnstile are enabled, then nothing will change.
-- if only keys are configured, then all requests without a valid api key will be refused.
+- 如果同时启用了密钥和 Turnstile，则不会有任何变化。
+- 如果只配置了密钥，则所有没有有效 API 密钥的请求都将被拒绝。
 
-### why not make keys exclusive by default?
-keys may be useful for going around rate limiting,
-while keeping the rest of api rate limited, with no turnstile in place.
+### 为什么默认不将密钥设为独占？
+密钥可以用于绕过速率限制，
+同时保持 API 其余部分的速率限制，且不使用 Turnstile。
 
-## api key file format
-the file is a JSON-serialized object with the following structure:
+## API 密钥文件格式
+文件是一个 JSON 序列化对象，结构如下：
 ```typescript
 
 type KeyFileContents = Record<
@@ -165,30 +165,30 @@ type KeyFileContents = Record<
 >;
 ```
 
-where *`UUIDv4String`* is a stringified version of a UUIDv4 identifier.
-- **name** is a field for your own reference, it is not used by cobalt anywhere.
+其中 *`UUIDv4String`* 是 UUIDv4 标识符的字符串版本。
+- **name** 是供你自己参考的字段，cobalt 不会在任何地方使用它。
 
-- **`limit`** specifies how many requests the API key can make during the window specified in the `RATELIMIT_WINDOW` env.
-    - when omitted, the limit specified in `RATELIMIT_MAX` will be used.
-    - it can be also set to `"unlimited"`, in which case the API key bypasses all rate limits.
+- **`limit`** 指定 API 密钥在 `RATELIMIT_WINDOW` 环境变量指定的时间窗口内可以发出的请求数量。
+    - 省略时，将使用 `RATELIMIT_MAX` 中指定的限制。
+    - 也可以设置为 `"unlimited"`，此时 API 密钥将绕过所有速率限制。
 
-- **`ips`** contains an array of allowlisted IP ranges, which can be specified both as individual ips or CIDR ranges (e.g. *`["192.168.42.69", "2001:db8::48", "10.0.0.0/8", "fe80::/10"]`*).
-    - when specified, only requests from these ip ranges can use the specified api key.
-    - when omitted, any IP can be used to make requests with that API key.
+- **`ips`** 包含一个允许的 IP 范围数组，可以指定为单个 IP 或 CIDR 范围（例如 *`["192.168.42.69", "2001:db8::48", "10.0.0.0/8", "fe80::/10"]`*）。
+    - 指定后，只有来自这些 IP 范围的请求才能使用指定的 API 密钥。
+    - 省略时，任何 IP 都可以使用该 API 密钥发出请求。
 
-- **`userAgents`** contains an array of allowed user agents, with support for wildcards (e.g. *`["cobaltbot/1.0", "Mozilla/5.0 * Chrome/*"]`*).
-    - when specified, requests with a `user-agent` that does not appear in this array will be rejected.
-    - when omitted, any user agent can be specified to make requests with that API key.
+- **`userAgents`** 包含一个允许的 User-Agent 数组，支持通配符（例如 *`["cobaltbot/1.0", "Mozilla/5.0 * Chrome/*"]`*）。
+    - 指定后，`user-agent` 不在此数组中的请求将被拒绝。
+    - 省略时，可以指定任何 User-Agent 使用该 API 密钥发出请求。
 
-- **`allowedServices`** is an array of allowed services or `"all"`.
-    - when `"all"` is specified, the key will be able to access all supported services, even if they're globally disabled via `DISABLED_SERVICES`.
-    - when an array of services is specified, the key will be able to access only the services included in the array.
-    - when omitted, the key will use the global list of supported services.
+- **`allowedServices`** 是一个允许的服务数组或 `"all"`。
+    - 指定 `"all"` 时，密钥将能够访问所有支持的服务，即使它们通过 `DISABLED_SERVICES` 被全局禁用。
+    - 指定服务数组时，密钥只能访问数组中包含的服务。
+    - 省略时，密钥将使用全局支持的服务列表。
 
-- if both `ips` and `userAgents` are set, the tokens will be limited by both parameters.
-- if cobalt detects any problem with your key file, it will be ignored and a warning will be printed to the console.
+- 如果同时设置了 `ips` 和 `userAgents`，令牌将同时受这两个参数限制。
+- 如果 cobalt 检测到你的密钥文件有任何问题，它将被忽略，并在控制台打印警告。
 
-an example key file could look like this:
+示例密钥文件如下所示：
 ```json
 {
     "b5c7160a-b655-4c7a-b500-de839f094550": {
@@ -204,5 +204,5 @@ an example key file could look like this:
 }
 ```
 
-if you are configuring a key file, **do not use the UUID from the example** but instead generate your own. you can do this by running the following command if you have node.js installed:
+如果你正在配置密钥文件，**不要使用示例中的 UUID**，而是生成你自己的。如果你安装了 node.js，可以运行以下命令：
 `node -e "console.log(crypto.randomUUID())"`
