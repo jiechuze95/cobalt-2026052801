@@ -1,0 +1,37 @@
+{
+    "banner.title": "支持安全开放\n的互联网",
+    "banner.subtitle": "向 imput 捐款，或将\ncobalt 的快乐分享给朋友",
+
+    "body.motivation": "cobalt 帮助创作者、教育工作者、视频制作者等许多人做他们热爱的事情。这是一项用心打造的服务，不是为了盈利。",
+    "body.no_bullshit": "我们相信互联网不应该是令人恐惧的，这就是为什么 cobalt 永远不会有广告或其他恶意内容。这是我们坚定的承诺。我们所做的一切都以隐私、可访问性和易用性为出发点，让每个人都能使用 cobalt。",
+    "body.keep_going": "如果你觉得 cobalt 有用，请考虑支持我们的工作！你可以通过捐款或与朋友分享 cobalt 来帮助我们。每一份捐款都深表感谢，帮助我们继续开发 cobalt 和其他项目。",
+
+    "card.once": "一次性捐款",
+    "card.recurring": "定期捐款",
+    "card.custom": "自定义金额（$2 起）",
+
+    "card.processor": "通过 {{value}}",
+
+    "card.option.5": "一杯咖啡",
+    "card.option.10": "一整个披萨",
+    "card.option.15": "一顿午餐",
+    "card.option.30": "两人午餐",
+    "card.option.50": "10公斤猫粮",
+    "card.option.100": "一年域名费用",
+    "card.option.200": "空气炸锅",
+    "card.option.500": "高级办公椅",
+    "card.option.1599": "入门款 MacBook Pro",
+    "card.option.4900": "10,000 个苹果",
+    "card.option.7398": "顶配 MacBook Pro",
+    "card.option.8629": "一小块地",
+    "card.option.9433": "豪华按摩浴缸",
+
+    "card.custom.submit": "捐款自定义金额",
+
+    "share.title": "与朋友分享 cobalt",
+
+    "alternative.title": "其他捐款方式",
+
+    "alt.copy": "{{ value }}。加密钱包地址。点击复制。",
+    "alt.open": "{{ value }}。点击打开。"
+}

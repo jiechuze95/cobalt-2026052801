@@ -1,0 +1,8 @@
+{
+    "bullet.purpose.title": "混流有什么作用？",
+    "bullet.purpose.description": "混流可以修复文件容器中的各种问题，例如缺失的时间信息。它有助于提高与旧版软件的兼容性，如 Vegas Pro 和 Windows Media Player。",
+    "bullet.explainer.title": "它是如何工作的？",
+    "bullet.explainer.description": "混流将现有的编解码器数据复制到一个新的媒体容器中。这是无损的过程；媒体数据不会被重新编码。",
+    "bullet.privacy.title": "本地处理",
+    "bullet.privacy.description": "Cobalt 在本地进行混流处理。文件永远不会离开您的设备，因此处理几乎是即时的。"
+}
