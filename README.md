@@ -264,6 +264,91 @@ bilibili · bluesky · dailymotion · facebook · instagram · loom · ok.ru · 
 | Русский | ru | ✅ |
 | 简体中文 | zh | ✅ |
 
+### Cookies 配置
+
+Cookies 用于访问需要登录才能查看的公开内容（如 Instagram 私密帖子、Twitter 需登录内容等）。
+
+#### 创建 cookies.json 文件
+
+在项目根目录（与 `docker-compose.yml` 同级）创建 `cookies.json` 文件：
+
+```json
+{
+    "instagram": [
+        "mid=xxx; ig_did=xxx; csrftoken=xxx; ds_user_id=xxx; sessionid=xxx"
+    ],
+    "instagram_bearer": [
+        "token=xxx",
+        "token=IGT:2:xxx"
+    ],
+    "twitter": [
+        "auth_token=xxx; ct0=xxx"
+    ],
+    "youtube": [
+        "cookie=xxx; b=xxx"
+    ],
+    "reddit": [
+        "client_id=xxx; client_secret=xxx; refresh_token=xxx"
+    ],
+    "vimeo": [
+        "access_token=xxx"
+    ]
+}
+```
+
+#### 各平台 Cookies 获取方法
+
+| 平台 | 需要的 Cookies | 获取方式 |
+|------|---------------|---------|
+| **Instagram** | `mid`, `ig_did`, `csrftoken`, `ds_user_id`, `sessionid` | 浏览器 F12 → Application → Cookies → instagram.com |
+| **Instagram Bearer** | `token` | 浏览器 F12 → Network → 找到 API 请求 → 复制 Bearer token |
+| **Twitter/X** | `auth_token`, `ct0` | 浏览器 F12 → Application → Cookies → twitter.com |
+| **YouTube** | `cookie`, `b` | 浏览器 F12 → Application → Cookies → youtube.com |
+| **Reddit** | `client_id`, `client_secret`, `refresh_token` | Reddit 开发者后台创建 App 获取 |
+| **Vimeo** | `access_token` | Vimeo 开发者后台生成 |
+
+#### 配置 Docker 挂载
+
+修改 `docker-compose.yml`，添加环境变量和卷挂载：
+
+```yaml
+services:
+    cobalt-api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: cobalt-api
+        init: true
+        restart: unless-stopped
+        ports:
+            - "9000:9000/tcp"
+        environment:
+            API_URL: "http://你的IP:9000/"
+            API_PORT: "9000"
+            CORS_WILDCARD: "1"
+            COOKIE_PATH: "/cookies.json"          # 添加这行
+        volumes:
+            - ./cookies.json:/cookies.json:ro     # 添加这行（只读挂载）
+```
+
+#### 更新配置后重启
+
+```bash
+# 编辑 cookies.json 后重启服务
+docker restart cobalt-api
+
+# 或者重新部署
+docker compose down && docker compose up -d
+```
+
+#### 注意事项
+
+- **安全性**：`cookies.json` 包含敏感信息，不要提交到 Git（已在 `.gitignore` 中排除）
+- **格式**：每个平台可以有多个 cookies（数组形式），cobalt 会随机使用
+- **更新**：Cookies 会过期，需要定期更新
+- **只读挂载**：Docker 中使用 `:ro` 只读挂载，提高安全性
+- **Bearer Token**：Instagram 的 bearer token 不需要 `Bearer` 前缀，直接填写 token 值
+
 ### 常见问题
 
 **Q: 端口被占用怎么办？**
