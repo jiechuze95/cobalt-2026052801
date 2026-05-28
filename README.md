@@ -59,3 +59,230 @@ cobalt 由 [royalehosting.net](https://royalehosting.net/?partner=cobalt) 赞助
 ### 许可证
 有关许可信息，请参阅 [api](api/README.md) 和 [web](web/README.md) 的 README。
 除非另有说明，本仓库的其余部分采用 [AGPL-3.0](LICENSE) 许可证。
+
+---
+
+## Docker 本地部署指南
+
+### 环境要求
+
+| 依赖 | 版本要求 | 说明 |
+|------|---------|------|
+| Docker | >= 20.10 | 容器运行环境 |
+| Docker Compose | >= 2.0 | 容器编排工具 |
+| Node.js | >= 20 | 前端构建需要 |
+| pnpm | >= 9 | 前端依赖管理 |
+
+### 端口规划
+
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| cobalt-api | 9000 | 后端 API 服务 |
+| cobalt-web | 8888 | 前端 Web 界面 |
+
+> **注意**：部署前请确保端口未被占用，可使用 `ss -tlnp | grep ':端口号'` 检查。
+
+### 第一步：克隆代码
+
+```bash
+git clone https://github.com/jiechuze95/cobalt-2026052801.git
+cd cobalt-2026052801
+```
+
+### 第二步：构建前端
+
+```bash
+# 安装 pnpm（如未安装）
+npm install -g pnpm
+
+# 进入前端目录
+cd web
+
+# 安装依赖
+pnpm install
+
+# 构建前端（替换为你的实际 IP 和 API 地址）
+WEB_DEFAULT_API="http://你的IP:9000/" WEB_HOST="你的IP" pnpm build
+
+# 返回项目根目录
+cd ..
+```
+
+构建完成后，静态文件会输出到 `web/build` 目录。
+
+### 第三步：创建 Nginx 配置
+
+在项目根目录创建 `nginx.conf` 文件：
+
+```nginx
+server {
+    listen 3000;
+    server_name _;
+    
+    root /usr/share/nginx/html;
+    index index.html;
+    
+    # 启用 gzip 压缩
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+    
+    # 静态资源缓存
+    location /_app/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    # SPA 路由
+    location / {
+        try_files $uri $uri.html $uri/ /index.html;
+    }
+    
+    # 健康检查
+    location /health {
+        return 200 'ok';
+        add_header Content-Type text/plain;
+    }
+}
+```
+
+### 第四步：创建 Docker Compose 配置
+
+在项目根目录创建 `docker-compose.yml` 文件：
+
+```yaml
+services:
+    cobalt-api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: cobalt-api
+        init: true
+        restart: unless-stopped
+        ports:
+            - "9000:9000/tcp"
+        environment:
+            API_URL: "http://你的IP:9000/"
+            API_PORT: "9000"
+            CORS_WILDCARD: "1"
+            DURATION_LIMIT: "10800"
+            RATELIMIT_WINDOW: "60"
+            RATELIMIT_MAX: "20"
+
+    cobalt-web:
+        image: nginx:alpine
+        container_name: cobalt-web
+        restart: unless-stopped
+        ports:
+            - "8888:3000/tcp"
+        volumes:
+            - ./web/build:/usr/share/nginx/html:ro
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+        depends_on:
+            - cobalt-api
+```
+
+> **重要**：将 `http://你的IP:9000/` 替换为你的实际服务器 IP 地址。
+
+### 第五步：构建并启动服务
+
+```bash
+# 构建后端 API 镜像
+docker compose build cobalt-api
+
+# 启动所有服务
+docker compose up -d
+
+# 查看运行状态
+docker ps --filter "name=cobalt" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+```
+
+### 第六步：验证部署
+
+```bash
+# 测试 API 服务
+curl http://localhost:9000/
+
+# 测试前端页面
+curl -I http://localhost:8888/
+```
+
+正常响应示例：
+
+**API 响应**：
+```json
+{
+  "cobalt": {
+    "version": "11.7.1",
+    "url": "http://你的IP:9000/",
+    "services": ["bilibili", "youtube", "tiktok", "twitter", ...]
+  }
+}
+```
+
+**前端响应**：HTTP 200 OK
+
+### 访问地址
+
+| 服务 | 地址 |
+|------|------|
+| 前端页面 | http://你的IP:8888/ |
+| 后端 API | http://你的IP:9000/ |
+
+### 常用运维命令
+
+```bash
+# 查看日志
+docker logs -f cobalt-api      # API 日志
+docker logs -f cobalt-web      # 前端日志
+
+# 停止所有服务
+docker compose down
+
+# 重启服务
+docker restart cobalt-api cobalt-web
+
+# 重新构建并启动
+docker compose down
+docker compose build cobalt-api
+docker compose up -d
+
+# 查看资源占用
+docker stats cobalt-api cobalt-web
+```
+
+### 支持的平台
+
+cobalt 支持以下 21 个平台的媒体下载：
+
+bilibili · bluesky · dailymotion · facebook · instagram · loom · ok.ru · pinterest · newgrounds · reddit · rutube · snapchat · soundcloud · streamable · tiktok · tumblr · twitch clips · twitter/x · vimeo · vk · youtube
+
+### 支持的语言
+
+| 语言 | 代码 | 状态 |
+|------|------|------|
+| English | en | ✅ |
+| Русский | ru | ✅ |
+| 简体中文 | zh | ✅ |
+
+### 常见问题
+
+**Q: 端口被占用怎么办？**
+修改 `docker-compose.yml` 中的端口映射，如将 `8888:3000` 改为 `8889:3000`。
+
+**Q: 如何配置 cookies 支持需要登录的服务？**
+在 `docker-compose.yml` 的 `cobalt-api` 环境变量中添加：
+```yaml
+environment:
+    COOKIE_PATH: "/cookies.json"
+volumes:
+    - ./cookies.json:/cookies.json
+```
+
+**Q: 如何更新到最新版本？**
+```bash
+git pull
+cd web && pnpm install && WEB_DEFAULT_API="http://你的IP:9000/" pnpm build && cd ..
+docker compose build cobalt-api
+docker compose up -d
+```
+
