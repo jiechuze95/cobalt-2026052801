@@ -334,6 +334,70 @@ cd web
 nohup bash -c 'WEB_DEFAULT_API="http://localhost:9000/" pnpm dev --host 0.0.0.0' > web.log 2>&1 &
 ```
 
+### Windows 系统启动说明
+
+Windows 下环境变量写法与 Linux/Mac 不同，需要使用 `set`（CMD）或 `$env:`（PowerShell）。
+
+#### CMD 命令行
+
+```cmd
+:: 安装依赖
+cd cobalt-2026052801
+pnpm install
+
+:: 启动 API 后端（窗口 1）
+cd api
+set API_URL=http://localhost:9000/
+set API_PORT=9000
+set CORS_WILDCARD=1
+set DURATION_LIMIT=10800
+set RATELIMIT_WINDOW=60
+set RATELIMIT_MAX=20
+node src/cobalt
+
+:: 启动 Web 前端（窗口 2，另开一个 CMD）
+cd web
+set WEB_DEFAULT_API=http://localhost:9000/
+pnpm dev --host 0.0.0.0
+```
+
+#### PowerShell
+
+```powershell
+# 启动 API 后端（窗口 1）
+cd api
+$env:API_URL="http://localhost:9000/"
+$env:API_PORT="9000"
+$env:CORS_WILDCARD="1"
+$env:DURATION_LIMIT="10800"
+$env:RATELIMIT_WINDOW="60"
+$env:RATELIMIT_MAX="20"
+node src/cobalt
+
+# 启动 Web 前端（窗口 2，另开一个 PowerShell）
+cd web
+$env:WEB_DEFAULT_API="http://localhost:9000/"
+pnpm dev --host 0.0.0.0
+```
+
+#### Windows 后台运行
+
+Windows 没有 `nohup`，推荐使用以下方式：
+
+```cmd
+:: 使用 start 命令在新窗口运行（CMD）
+start "cobalt-api" cmd /c "cd /d %cd%\api && set API_URL=http://localhost:9000/&& set API_PORT=9000&& set CORS_WILDCARD=1&& node src/cobalt"
+start "cobalt-web" cmd /c "cd /d %cd%\web && set WEB_DEFAULT_API=http://localhost:9000/&& pnpm dev --host 0.0.0.0"
+```
+
+或使用 PowerShell：
+
+```powershell
+Start-Process -NoNewWindow -FilePath "node" -ArgumentList "src/cobalt" -WorkingDirectory "api" -RedirectStandardOutput "api.log" -RedirectStandardError "api-err.log" -Environment @{API_URL="http://localhost:9000/";API_PORT="9000";CORS_WILDCARD="1";DURATION_LIMIT="10800";RATELIMIT_WINDOW="60";RATELIMIT_MAX="20"}
+```
+
+> **提示**：Windows 下建议直接开两个终端窗口分别运行 API 和 Web，最简单直观。
+
 ### 支持的平台
 
 cobalt 支持以下 21 个平台的媒体下载：
