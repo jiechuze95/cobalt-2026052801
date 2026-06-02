@@ -271,19 +271,44 @@ cd cobalt-2026052801
 pnpm install
 ```
 
-### 第二步：启动 API 后端
+### 第二步：配置环境变量
+
+项目使用 `.env` 文件管理环境变量，启动前需从模板创建配置文件：
+
+```bash
+# API 后端配置
+cp api/.env.example api/.env
+
+# Web 前端配置
+cp web/.env.example web/.env
+```
+
+然后编辑 `.env` 文件，修改为实际值。以下是各变量说明：
+
+**api/.env**（核心配置）：
+
+| 变量 | 必需 | 默认值 | 说明 |
+|------|------|--------|------|
+| `API_URL` | ✅ | — | API 服务地址，必须包含协议和尾部斜杠 |
+| `API_PORT` | — | 9000 | API 监听端口 |
+| `CORS_WILDCARD` | — | 1 | 允许跨域（1=允许所有，0=仅同源） |
+| `DURATION_LIMIT` | — | 10800 | 最大下载时长（秒） |
+| `RATELIMIT_WINDOW` | — | 60 | 速率限制窗口（秒） |
+| `RATELIMIT_MAX` | — | 20 | 窗口内最大请求数 |
+| `COOKIE_PATH` | — | — | Cookies 文件路径（可选） |
+
+**web/.env**（核心配置）：
+
+| 变量 | 必需 | 默认值 | 说明 |
+|------|------|--------|------|
+| `WEB_DEFAULT_API` | ✅ | — | 指向 API 后端地址 |
+
+> 完整环境变量说明见 [docs/api-env-variables.md](/docs/api-env-variables.md)
+
+### 第三步：启动 API 后端
 
 ```bash
 cd api
-
-# 必需参数：API_URL（API 服务地址）
-# 可选参数：API_PORT、CORS_WILDCARD、DURATION_LIMIT、RATELIMIT_WINDOW、RATELIMIT_MAX
-API_URL="http://localhost:9000/" \
-API_PORT=9000 \
-CORS_WILDCARD=1 \
-DURATION_LIMIT=10800 \
-RATELIMIT_WINDOW=60 \
-RATELIMIT_MAX=20 \
 node src/cobalt
 ```
 
@@ -293,15 +318,13 @@ curl http://localhost:9000/
 # 应返回 JSON，包含 version、services 等信息
 ```
 
-### 第三步：启动 Web 前端
+### 第四步：启动 Web 前端
 
 打开另一个终端窗口：
 
 ```bash
 cd web
-
-# 必需参数：WEB_DEFAULT_API（指向 API 地址）
-WEB_DEFAULT_API="http://localhost:9000/" pnpm dev --host 0.0.0.0
+pnpm dev --host 0.0.0.0
 ```
 
 启动后验证：
@@ -325,75 +348,46 @@ curl -sk https://localhost:5173/
 如需后台运行服务，可使用 `nohup` 或 `pm2`：
 
 ```bash
-# 使用 nohup 后台运行 API
+# 使用 nohup 后台运行 API（读取 api/.env 配置）
 cd api
-nohup bash -c 'API_URL="http://localhost:9000/" API_PORT=9000 CORS_WILDCARD=1 node src/cobalt' > api.log 2>&1 &
+nohup node src/cobalt > api.log 2>&1 &
 
-# 使用 nohup 后台运行 Web
+# 使用 nohup 后台运行 Web（读取 web/.env 配置）
 cd web
-nohup bash -c 'WEB_DEFAULT_API="http://localhost:9000/" pnpm dev --host 0.0.0.0' > web.log 2>&1 &
+nohup pnpm dev --host 0.0.0.0 > web.log 2>&1 &
 ```
 
 ### Windows 系统启动说明
 
-Windows 下环境变量写法与 Linux/Mac 不同，需要使用 `set`（CMD）或 `$env:`（PowerShell）。
+Windows 下启动方式与 Linux/Mac 完全一致，因为环境变量通过 `.env` 文件读取，无需使用 `set` 或 `$env:` 设置。
 
-#### CMD 命令行
+#### CMD / PowerShell 通用步骤
 
 ```cmd
 :: 安装依赖
 cd cobalt-2026052801
 pnpm install
 
+:: 创建配置文件
+copy api\.env.example api\.env
+copy web\.env.example web\.env
+:: 编辑 .env 文件修改为实际值
+
 :: 启动 API 后端（窗口 1）
 cd api
-set API_URL=http://localhost:9000/
-set API_PORT=9000
-set CORS_WILDCARD=1
-set DURATION_LIMIT=10800
-set RATELIMIT_WINDOW=60
-set RATELIMIT_MAX=20
 node src/cobalt
 
-:: 启动 Web 前端（窗口 2，另开一个 CMD）
+:: 启动 Web 前端（窗口 2，另开一个终端）
 cd web
-set WEB_DEFAULT_API=http://localhost:9000/
-pnpm dev --host 0.0.0.0
-```
-
-#### PowerShell
-
-```powershell
-# 启动 API 后端（窗口 1）
-cd api
-$env:API_URL="http://localhost:9000/"
-$env:API_PORT="9000"
-$env:CORS_WILDCARD="1"
-$env:DURATION_LIMIT="10800"
-$env:RATELIMIT_WINDOW="60"
-$env:RATELIMIT_MAX="20"
-node src/cobalt
-
-# 启动 Web 前端（窗口 2，另开一个 PowerShell）
-cd web
-$env:WEB_DEFAULT_API="http://localhost:9000/"
 pnpm dev --host 0.0.0.0
 ```
 
 #### Windows 后台运行
 
-Windows 没有 `nohup`，推荐使用以下方式：
-
 ```cmd
 :: 使用 start 命令在新窗口运行（CMD）
-start "cobalt-api" cmd /c "cd /d %cd%\api && set API_URL=http://localhost:9000/&& set API_PORT=9000&& set CORS_WILDCARD=1&& node src/cobalt"
-start "cobalt-web" cmd /c "cd /d %cd%\web && set WEB_DEFAULT_API=http://localhost:9000/&& pnpm dev --host 0.0.0.0"
-```
-
-或使用 PowerShell：
-
-```powershell
-Start-Process -NoNewWindow -FilePath "node" -ArgumentList "src/cobalt" -WorkingDirectory "api" -RedirectStandardOutput "api.log" -RedirectStandardError "api-err.log" -Environment @{API_URL="http://localhost:9000/";API_PORT="9000";CORS_WILDCARD="1";DURATION_LIMIT="10800";RATELIMIT_WINDOW="60";RATELIMIT_MAX="20"}
+start "cobalt-api" cmd /k "cd /d %cd%\api && node src/cobalt"
+start "cobalt-web" cmd /k "cd /d %cd%\web && pnpm dev --host 0.0.0.0"
 ```
 
 > **提示**：Windows 下建议直接开两个终端窗口分别运行 API 和 Web，最简单直观。
