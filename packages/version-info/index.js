@@ -20,18 +20,21 @@ const pack = findFile('package.json');
 
 const readGit = (filename) => {
     if (!root) {
-        throw 'no git repository root found';
+        return '';
     }
 
-    return readFile(join(root, filename), 'utf8');
+    return readFile(join(root, filename), 'utf8').catch(() => '');
 }
 
 export const getCommit = async () => {
-    return (await readGit('.git/logs/HEAD'))
+    const content = await readGit('.git/logs/HEAD');
+    if (!content) return 'unknown';
+
+    return content
             ?.split('\n')
             ?.filter(String)
             ?.pop()
-            ?.split(' ')[1];
+            ?.split(' ')[1] || 'unknown';
 }
 
 export const getBranch = async () => {
@@ -43,13 +46,19 @@ export const getBranch = async () => {
         return process.env.WORKERS_CI_BRANCH;
     }
 
-    return (await readGit('.git/HEAD'))
+    const content = await readGit('.git/HEAD');
+    if (!content) return 'unknown';
+
+    return content
             ?.replace(/^ref: refs\/heads\//, '')
-            ?.trim();
+            ?.trim() || 'unknown';
 }
 
 export const getRemote = async () => {
-    let remote = (await readGit('.git/config'))
+    const content = await readGit('.git/config');
+    if (!content) return 'unknown';
+
+    let remote = content
                     ?.split('\n')
                     ?.find(line => line.includes('url = '))
                     ?.split('url = ')[1];
@@ -63,7 +72,7 @@ export const getRemote = async () => {
     remote = remote?.replace(/\.git$/, '');
 
     if (!remote) {
-        throw 'could not parse remote';
+        return 'unknown';
     }
 
     return remote;
