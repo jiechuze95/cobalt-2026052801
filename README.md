@@ -250,6 +250,90 @@ docker compose up -d
 docker stats cobalt-api cobalt-web
 ```
 
+## 本地启动指南（不使用 Docker）
+
+以下介绍直接在本机运行 API 和 Web 前端的方法，适合开发调试或不想使用 Docker 的场景。
+
+### 环境要求
+
+| 依赖 | 版本要求 | 说明 |
+|------|---------|------|
+| Node.js | >= 20 | 运行环境 |
+| pnpm | >= 9 | 包管理器 |
+
+### 第一步：安装依赖
+
+```bash
+git clone https://github.com/jiechuze95/cobalt-2026052801.git
+cd cobalt-2026052801
+
+# 安装所有依赖（包括 api、web、packages）
+pnpm install
+```
+
+### 第二步：启动 API 后端
+
+```bash
+cd api
+
+# 必需参数：API_URL（API 服务地址）
+# 可选参数：API_PORT、CORS_WILDCARD、DURATION_LIMIT、RATELIMIT_WINDOW、RATELIMIT_MAX
+API_URL="http://localhost:9000/" \
+API_PORT=9000 \
+CORS_WILDCARD=1 \
+DURATION_LIMIT=10800 \
+RATELIMIT_WINDOW=60 \
+RATELIMIT_MAX=20 \
+node src/cobalt
+```
+
+启动后验证：
+```bash
+curl http://localhost:9000/
+# 应返回 JSON，包含 version、services 等信息
+```
+
+### 第三步：启动 Web 前端
+
+打开另一个终端窗口：
+
+```bash
+cd web
+
+# 必需参数：WEB_DEFAULT_API（指向 API 地址）
+WEB_DEFAULT_API="http://localhost:9000/" pnpm dev --host 0.0.0.0
+```
+
+启动后验证：
+```bash
+# 注意：开发模式启用了 basicSSL 插件，使用 HTTPS 协议
+curl -sk https://localhost:5173/
+# 应返回 cobalt 前端 HTML 页面
+```
+
+### 本地启动端口
+
+| 服务 | 协议 | 端口 | 访问地址 |
+|------|------|------|---------|
+| API 后端 | HTTP | 9000 | http://localhost:9000/ |
+| Web 前端 | HTTPS | 5173 | https://localhost:5173/ |
+
+> **注意**：Web 前端使用自签名 SSL 证书（basicSSL 插件），浏览器会提示不安全，点击"继续访问"即可。
+
+### 后台运行
+
+如需后台运行服务，可使用 `nohup` 或 `pm2`：
+
+```bash
+# 使用 nohup 后台运行 API
+cd api
+nohup bash -c 'API_URL="http://localhost:9000/" API_PORT=9000 CORS_WILDCARD=1 node src/cobalt' > api.log 2>&1 &
+
+# 使用 nohup 后台运行 Web
+cd web
+nohup bash -c 'WEB_DEFAULT_API="http://localhost:9000/" pnpm dev --host 0.0.0.0' > web.log 2>&1 &
+```
+
 ### 支持的平台
 
 cobalt 支持以下 21 个平台的媒体下载：
